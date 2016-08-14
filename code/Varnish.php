@@ -40,8 +40,8 @@ class Varnish extends Object implements Flushable
         /* @var $siteTree SiteTree */
         $siteTree =  SiteTree::get()->byID($siteTreeId);
         if ($siteTree !== null && $siteTree->exists()) {
-            static::purge(self::getVclSyntax()->getPurgeRegex(
-                '^/' . preg_quote($siteTree->Link()) . '$'
+            static::purge(static::getVclSyntax()->getPurgeRegex(
+                '^' . preg_quote(rtrim($siteTree->Link(), '/')) . '(\/|)$'
             ));
         }
     }
@@ -55,8 +55,8 @@ class Varnish extends Object implements Flushable
     {
         $file = File::get()->byID($fileId);
         if ($file !== null && $file->exists()) {
-            static::purge(self::getVclSyntax()->getPurgeRegex(
-                '^/' . preg_quote($file->getFilename()) . '$'
+            static::purge(static::getVclSyntax()->getPurgeRegex(
+                '^' . preg_quote($file->getFilename()) . '$'
             ));
         }
     }
@@ -70,7 +70,7 @@ class Varnish extends Object implements Flushable
     public static function getVclSyntax()
     {
         if (!static::$vclSyntax) {
-            static::$vclSyntax = new Vcl4();
+            static::$vclSyntax = Vcl4::create();
         }
         return static::$vclSyntax;
     }
@@ -81,7 +81,7 @@ class Varnish extends Object implements Flushable
     public static function getClient()
     {
         if (!static::$varnishClient) {
-            static::$varnishClient = new VarnishClient();
+            static::$varnishClient = VarnishClient::create();
         }
         return static::$varnishClient;
     }
@@ -92,6 +92,6 @@ class Varnish extends Object implements Flushable
      */
     public static function purge($regex)
     {
-        return static::getClient()->purge(Director::baseURL(), $regex);
+        return static::getClient()->purge(Director::absoluteBaseURL(), $regex);
     }
 }

@@ -1,9 +1,9 @@
 <?php
 /**
- * Class PurgeClient
+ * Class VarnishClient
  *
- * A wrapper around RestfulService given it doesn't support PURGE and
- * is likely to be replaced in SS 4
+ * To be replaced with Guzzle in v4
+ * RestService doesn't support PURGE requests natively
  *
  * @author Carey Sizer <careysizer@gmail.com>
  */
@@ -16,19 +16,16 @@ class VarnishClient extends Object
      */
     public function purge($baseurl, $urlRegex)
     {
-        $service = new RestfulService($baseurl, 0);
-        $headers = array('X-Purge-Regex' => $urlRegex);
-        // Make curl request
-        $response = $service->curlRequest(
-            $service->getAbsoluteRequestURL($baseurl),
-            'PURGE',
-            null,
-            $headers,
-            []
+        $ch        = curl_init();
+        $options = array(
+            CURLOPT_URL             => $baseurl,
+            CURLOPT_RETURNTRANSFER  => 1,
+            CURLOPT_USERAGENT       => 'SS Varnish-Purge-Client',
+            CURLOPT_CONNECTTIMEOUT  => 2,
+            CURLOPT_CUSTOMREQUEST   => 'PURGE',
+            CURLOPT_HTTPHEADER      => array('X-Purge-Url-Regex: ' . $urlRegex),
         );
-        // We don't set up the request or reponse to use
-        // the build in RestfulService caching
-        $response->setCachedResponse(false);
-        return $response;
+        curl_setopt_array($ch, $options);
+        curl_exec($ch);
     }
 }

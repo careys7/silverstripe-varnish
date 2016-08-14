@@ -1,0 +1,9 @@
+---
+Name: varnish
+---
+SiteTree:
+  extensions:
+    - VarnishSiteTreeExtension
+File:
+  extensions:
+    - VarnishFileExtension
