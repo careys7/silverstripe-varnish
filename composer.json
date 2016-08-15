@@ -1,0 +1,20 @@
+{
+  "name": "careysizer/silverstripe-varnish",
+  "description": "SilverStripe Varnish Cache module",
+  "type": "silverstripe-module",
+  "license": "MIT",
+  "keywords": ["silverstripe", "varnish", "caching"],
+  "homepage": "https://github.com/careysizer/silverstripe-varnish",
+  "authors": [{
+    "name": "Carey Sizer",
+    "email": "careysizer@gmail.com"
+  }],
+  "require":
+  {
+    "silverstripe/framework": "~3.1",
+    "silverstripe/cms": "~3.1"
+  },
+  "extra": {
+    "installer-name": "varnish"
+  }
+}
