@@ -15,7 +15,7 @@ class Vcl4Test extends SapphireTest
     {
         $vcl4 = Vcl4::create();
         $this->assertEquals(
-            '^/about\-us(\/|)$',
+            '^about\-us(\/|)$',
             $vcl4->getPurgeRegex('about-us')
         );
     }
