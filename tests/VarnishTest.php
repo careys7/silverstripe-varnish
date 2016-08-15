@@ -17,7 +17,7 @@ class VarnishTest extends SapphireTest
         $syntax = $varnish->getVclSyntax();
         // Ensure that the interface is used
         $this->assertInstanceOf(
-            VclSyntaxInterface::class,
+            'VclSyntaxInterface',
             $syntax
         );
     }
@@ -31,7 +31,7 @@ class VarnishTest extends SapphireTest
         $client = $varnish->getClient();
         // Ensure that the right type is returned
         $this->assertInstanceOf(
-            VarnishClient::class,
+            'VarnishClient',
             $client
         );
     }
