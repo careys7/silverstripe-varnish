@@ -14,6 +14,9 @@ class Vcl4 extends Object implements VclSyntaxInterface
      */
     public function getPurgeRegex($url)
     {
-        return sprintf('%s', $url);
+        return sprintf(
+            '^%s(\/|)$',
+            preg_quote(rtrim($url, '/'))
+        );
     }
 }

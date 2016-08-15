@@ -41,7 +41,7 @@ class Varnish extends Object implements Flushable
         $siteTree =  SiteTree::get()->byID($siteTreeId);
         if ($siteTree !== null && $siteTree->exists()) {
             static::purge(static::getVclSyntax()->getPurgeRegex(
-                '^' . preg_quote(rtrim($siteTree->Link(), '/')) . '(\/|)$'
+                $siteTree->Link()
             ));
         }
     }
@@ -56,7 +56,7 @@ class Varnish extends Object implements Flushable
         $file = File::get()->byID($fileId);
         if ($file !== null && $file->exists()) {
             static::purge(static::getVclSyntax()->getPurgeRegex(
-                '^' . preg_quote($file->getFilename()) . '$'
+                $file->getFilename()
             ));
         }
     }
