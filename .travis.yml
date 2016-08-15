@@ -1,0 +1,65 @@
+language: php
+
+sudo: false
+
+addons:
+  apt:
+    packages:
+      - tidy
+
+before_install:
+  - pip install --user codecov
+
+env:
+  global:
+    - DB=MYSQL CORE_RELEASE=3.1
+
+    # Turn coverage off by default, as it's expensive time wise
+    - COVERAGE=1
+
+    # The path of the module when installed by composer
+    - MODULE_PATH=varnish
+
+matrix:
+  allow_failures:
+    - php: hhvm-nightly
+  include:
+    - php: 5.6
+      env: DB=MYSQL COVERAGE=1
+    - php: 5.5
+      env: DB=MYSQL
+    - php: 5.6
+      env: DB=PGSQL
+    - php: 5.6
+      env: DB=MYSQL CORE_RELEASE=3.2
+    - php: 5.6
+      env: DB=PGSQL CORE_RELEASE=3.2
+    - php: 5.4
+      env: DB=SQLITE
+    - php: 5.3
+      env: DB=MYSQL
+    - php: hhvm
+      env: DB=MYSQL
+
+
+before_script:
+  - phpenv rehash
+  - composer self-update || true
+  - git clone git://github.com/silverstripe-labs/silverstripe-travis-support.git ~/travis-support
+  - php ~/travis-support/travis_setup.php --source `pwd` --target ~/builds/ss
+  - cd ~/builds/ss
+
+#Execute tests with or without coverage
+script:
+  # Execute tests with no coverage.  This is the fastest option
+  - "if [ \"$COVERAGE\" = \"0\" ]; then vendor/bin/phpunit $MODULE_PATH/tests/; fi"
+
+  # Execute tests with coverage.  Do this for a small
+  - "if [ \"$COVERAGE\" = \"1\" ]; then vendor/bin/phpunit --coverage-clover=coverage.clover $MODULE_PATH/tests/; fi"
+
+#Upload coverage even if there is a failure
+after_script:
+  - "if [ \"$COVERAGE\" = \"1\" ]; then mv coverage.clover ~/build/$TRAVIS_REPO_SLUG/; fi"
+  - cd ~/build/$TRAVIS_REPO_SLUG
+  - wget https://scrutinizer-ci.com/ocular.phar
+  - "if [ \"$COVERAGE\" = \"1\" ]; then travis_retry codecov && travis_retry php ocular.phar code-coverage:upload --format=php-clover coverage.clover; fi"
